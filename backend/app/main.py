@@ -1,46 +1,44 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel, Field
-from typing import List, Dict, Optional
-import json
-from motor.motor_asyncio import AsyncIOMotorClient
-from bson import ObjectId
-from datetime import datetime
-import os
-import logging
-from contextlib import asynccontextmanager
+from flask import Flask, request, jsonify
+import pandas as pd
+from joblib import load
+import numpy as np
 
-db = None
+app = Flask(__name__)
 
-class AgentDB(BaseModel):
-    id: str = Field(alias="_id")
-    name: str
-    files: List[Dict] = []
-    websites: List[Dict] = []
-    messages: List[Dict] = []
+# Load the pre-trained model
+model = load('../model/linear_regression_model.joblib')
 
-class Message(BaseModel):
-    message: str
-
-async def init_db():
-    global db
+@app.route('/predict', methods=['POST'])
+def predict_salary():
     try:
-        mongodb_url = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-        client = AsyncIOMotorClient(mongodb_url)
-        db = client.agents_db
-        await client.admin.command('ping')
-        print("Successfully connected to MongoDB!")
+        # Get the JSON data from the request
+        data = request.json
+        
+        # Create a DataFrame with the required features
+        features = pd.DataFrame({
+            "Age": [data.get("Age")],
+            "GP": [data.get("GP")],
+            "TRB": [data.get("TRB")],
+            "AST": [data.get("AST")],
+            "PTS": [data.get("PTS")],
+            "BLK": [data.get("BLK")],
+            "TS%": [data.get("TS%")]
+        })
+        
+        # Make prediction
+        prediction = model.predict(features)
+        
+        # Return the prediction as JSON
+        return jsonify({
+            'predicted_salary': int(prediction[0]),
+            'status': 'success'
+        })
+    
     except Exception as e:
-        print(f"Error connecting to MongoDB: {e}")
-        raise e
+        return jsonify({
+            'error': str(e),
+            'status': 'error'
+        }), 400
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await init_db()  # Startup logic
-    yield  # Application runs here
-    # Cleanup logic if needed
-
-app = FastAPI(lifespan=lifespan)
-
-@app.get("/")
-async def root():
-    return {"message": "Hello, FastAPI!"}
+if __name__ == '__main__':
+    app.run(debug=True, port=5200)
