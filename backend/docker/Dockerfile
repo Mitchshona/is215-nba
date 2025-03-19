@@ -9,8 +9,16 @@ COPY docker/requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code from the project root
-COPY . .
+# Copy the files from the app directory to the container's /app directory
+COPY app/ .
+
+# Copy the files from the model directory to the container's /model directory
+WORKDIR /model
+COPY model/ .
+
+# For debugging: list files after copying
+RUN ls -la
 
 # Expose the port and define the command to run the app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+WORKDIR /app
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
