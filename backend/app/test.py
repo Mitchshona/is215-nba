@@ -2,7 +2,7 @@ import requests
 import json
 
 # URL of your Flask API
-url = 'http://localhost:5200/predict'
+url = 'http://localhost:8080/predict'
 
 # Example player data
 player_data = {

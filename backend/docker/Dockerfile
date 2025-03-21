@@ -21,4 +21,5 @@ RUN ls -la
 
 # Expose the port and define the command to run the app
 WORKDIR /app
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "main:app"]
+
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "main:app"]

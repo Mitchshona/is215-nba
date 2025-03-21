@@ -202,4 +202,5 @@ if __name__ == '__main__':
     # run_analysis()
     
     # Option 2: Run the Flask app
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 8080))  # Default to 8080 if PORT not set
+    app.run(host="0.0.0.0", port=port)

@@ -1,8 +1,9 @@
 services:
-  app:
+  nba-regression-service:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    platform: linux/amd64
     image: nba-backend
     ports:
-      - "5200:5000"
+      - "8080:8080"
