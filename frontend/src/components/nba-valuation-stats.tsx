@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { NBAPlayer } from "@/data/nba-players"
+import type { NBAPlayer } from "@/data/nba-api"
 import { TrendingUp, TrendingDown, DollarSign, BarChart3 } from "lucide-react"
 
 interface NBAValuationStatsProps {
