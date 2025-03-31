@@ -24,7 +24,7 @@ import {
   Minus,
 } from "lucide-react";
 import { useState } from "react";
-import { type NBAPlayer, fetchNBAPlayerData } from "@/data/nba-api";
+import { type NBAPlayer } from "@/data/nba-api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
